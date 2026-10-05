@@ -7,6 +7,8 @@ from pathlib import Path
 
 ALLOWED_CODEX_PATHS = {
     ".codex/config.toml",
+    ".codex/environments/environment.toml",
+    ".codex/REVIEW.md",
 }
 
 FORBIDDEN_STAGEABLE_PATHS = (
