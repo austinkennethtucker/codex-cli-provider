@@ -540,8 +540,10 @@ async def test_concurrency_limit_returns_429_when_all_slots_busy():
 
     third = await request(app, "POST", "/v1/chat/completions", json=payload)
     runner.release.set()
-    await first
-    await second
+    first_response = await first
+    second_response = await second
+    assert first_response.status_code == 200
+    assert second_response.status_code == 200
 
     assert third.status_code == 429
     assert third.headers["retry-after"] == "3"
