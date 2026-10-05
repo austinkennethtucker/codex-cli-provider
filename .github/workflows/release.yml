@@ -30,7 +30,9 @@ jobs:
 
       - name: Validate dispatch image tag
         if: github.event_name == 'workflow_dispatch'
-        run: python scripts/image_tags.py validate --kind release "${{ inputs.image_tag }}"
+        env:
+          REQUESTED_IMAGE_TAG: ${{ inputs.image_tag }}
+        run: python scripts/image_tags.py validate --kind release "$REQUESTED_IMAGE_TAG"
 
       - name: Validate git tag image tag
         if: github.event_name == 'push'
