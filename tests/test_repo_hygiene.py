@@ -8,6 +8,18 @@ def test_codex_project_config_is_stageable():
     check_paths([".codex/config.toml"])
 
 
+@pytest.mark.parametrize(
+    "path",
+    [
+        ".codex/environments/environment.toml",
+        ".codex/REVIEW.md",
+    ],
+)
+def test_reviewed_codex_project_files_are_stageable(path):
+    assert is_allowed_codex_path(path)
+    check_paths([path])
+
+
 def test_codex_rules_files_are_stageable():
     assert is_allowed_codex_path(".codex/rules/default.rules")
     check_paths([".codex/rules/default.rules"])
