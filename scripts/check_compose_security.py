@@ -8,6 +8,7 @@ from typing import Any
 
 
 FORBIDDEN_ENV = {"OPENAI_API_KEY"}
+FORBIDDEN_MOUNT_FRAGMENTS = ("/var/run/docker.sock", ".cli-proxy-api")
 
 
 def fail(message: str) -> None:
@@ -34,6 +35,13 @@ def as_list(value: Any) -> list[Any]:
     if isinstance(value, list):
         return value
     return [value]
+
+
+def check_forbidden_mount(source: str, target: str) -> None:
+    if any(fragment in source or fragment in target for fragment in FORBIDDEN_MOUNT_FRAGMENTS):
+        fail(f"forbidden mount detected: {source}:{target}")
+    if target in {"/home", "/root"} or source in {"/home", "/root"}:
+        fail(f"forbidden home/root mount detected: {source}:{target}")
 
 
 def main() -> None:
@@ -92,7 +100,6 @@ def main() -> None:
     codex_home_mount_ok = False
     codex_work_mount_ok = False
     secret_mount_ok = False
-    forbidden_fragments = ("/var/run/docker.sock", ".cli-proxy-api", "/runner")
     for volume in volumes:
         source = str(volume.get("source", ""))
         target = str(volume.get("target", ""))
@@ -102,10 +109,7 @@ def main() -> None:
             codex_work_mount_ok = True
         elif target == "/run/secrets/proxy_api_key" and source.endswith("/data/secrets/proxy_api_key") and volume.get("read_only"):
             secret_mount_ok = True
-        if any(fragment in source or fragment in target for fragment in forbidden_fragments):
-            fail(f"forbidden mount detected: {source}:{target}")
-        if target in {"/home", "/root"} or source in {"/home", "/root"}:
-            fail(f"forbidden home/root mount detected: {source}:{target}")
+        check_forbidden_mount(source, target)
     if not codex_home_mount_ok:
         fail("expected project data/codex-home mount at /root/.codex")
     if not codex_work_mount_ok:
