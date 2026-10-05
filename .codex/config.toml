@@ -2,3 +2,9 @@
 #
 # Keep credentials and runtime state out of this file. Codex/ChatGPT auth for
 # the provider container belongs in data/codex-home, mounted at /root/.codex.
+
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+[sandbox_workspace_write]
+network_access = false
