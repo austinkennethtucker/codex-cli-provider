@@ -7,6 +7,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 ARG TARGETARCH
 
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install --no-install-recommends -y \
       bubblewrap \
       ca-certificates \
