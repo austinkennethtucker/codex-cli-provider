@@ -48,6 +48,17 @@ docker compose up --build -d
 
 Use `docker-compose.image.yml` only when pulling a published image.
 
+## Codex Worktrees
+
+- `.codex/environments/environment.toml` creates a repository-local `.venv`;
+  its setup needs public package-index access but must not start Docker or copy
+  ignored runtime state.
+- Keep `.codex/config.toml` approval-gated and repository-scoped. Do not add
+  models, providers, credentials, user profiles, external writable roots, or
+  default agent-shell network access.
+- Never copy `.env`, `data/`, Codex auth files, or registry credentials between
+  worktrees.
+
 ## Verification
 
 Before handing off changes, run:
@@ -68,3 +79,6 @@ The Dockerfile currently copies only `requirements.txt` and `src/`. Keep it that
 way unless there is a specific reason to widen the build context. `.dockerignore`
 excludes `.env`, `data/`, Codex auth files, virtualenvs, logs, and other local
 state that must not be published in images.
+
+Publishing an image, pushing a release tag, changing registry configuration,
+or widening the service beyond loopback requires separate release approval.
